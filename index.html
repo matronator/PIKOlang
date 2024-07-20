@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>PIKO lang</title>
+        <link rel="stylesheet" href="/src/style.css">
+    </head>
+    <body>
+        <main>
+            <div>
+                <textarea name="input" id="input"></textarea>
+                <div class="controls">
+                    <div class="btn-group">
+                        <button id="executeBtn">▶️ Execute</button>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="runBtn">🕐 Run</button>
+                        <input type="range" min="50" max="1000" value="500" name="speedRange" id="speedRange">
+                        <input type="number" min="50" max="1000" value="500" name="speedText" id="speedText">
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="debugBtn">🛠️ Debug</button>
+                        <button id="stepBtn" disabled>⏩️</button>
+                        <button id="finishBtn" disabled>⏭️</button>
+                    </div>
+                </div>
+            </div>
+
+            <pre id="output"></pre>
+        </main>
+
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
