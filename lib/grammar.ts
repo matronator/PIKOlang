@@ -3,6 +3,7 @@ export module Grammar {
     export type Minus = '-';
     export type Multiply = '*';
     export type Divide = '/';
+    export type Underscore = '_';
 
     export type Equals = '=';
     export type LessThan = '<';
@@ -11,6 +12,10 @@ export module Grammar {
     export type QuestionMark = '?';
     export type ExclamationMark = '!';
     export type Semicolon = ';';
+    export type Colon = ':';
+    export type Ampersand = '&';
+    export type Tilde = '~';
+    // export type Dot = '.';
 
     export type RightArrow = '>';
     export type LeftArrow = '<';
@@ -32,11 +37,11 @@ export module Grammar {
 
     export type AlphaNumChar = Char | Digit;
 
-    export type MathOperator = Plus | Minus | Multiply | Divide;
+    export type MathOperator = Plus | Minus | Multiply | Divide | Underscore;
     export type ComparisonOperator = Equals | LessThan | GreaterThan;
     export type Operator = MathOperator | ComparisonOperator;
 
-    export type Keyword = QuestionMark | ExclamationMark | Semicolon;
+    export type Keyword = QuestionMark | ExclamationMark | Semicolon | Colon | Ampersand | Tilde;
 
     export type DirectionModifier = RightArrow | LeftArrow | UpArrow | DownArrow;
 
@@ -50,14 +55,25 @@ export module Grammar {
         Minus = '-',
         Multiply = '*',
         Divide = '/',
+        Underscore = '_',
         Equals = '=',
         LessThan = '<',
         GreaterThan = '>',
         QuestionMark = '?',
         ExclamationMark = '!',
         Semicolon = ';',
+        Colon = ':',
+        Ampersand = '&',
+        Tilde = '~',
         SingleQuote = "'",
         DoubleQuote = '"',
+    }
+
+    export enum DirectionModifiers {
+        RightArrow = '>',
+        LeftArrow = '<',
+        UpArrow = '^',
+        DownArrow = 'v',
     }
 }
 

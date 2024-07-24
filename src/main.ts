@@ -1,16 +1,23 @@
+import { Grammar } from '../lib/grammar';
 import { Operation, Parser } from '../lib/interpreter';
 import { ConsoleOutput } from './console';
+import { initDropdowns } from './dropdown';
+import { updateIndicators } from './indicators';
+import { SAMPLES } from './samples';
+
+let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
+let running = false;
+let inProgress = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     const consoleOutput = new ConsoleOutput('console');
 
-    const outputEl = document.getElementById('output');
-    const inputEl = document.getElementById('input') as HTMLTextAreaElement;
-    if (!outputEl || !inputEl) return;
+    initDropdowns();
 
-    inputEl.addEventListener('input', () => {
-        outputEl.textContent = inputEl.value;
-    });
+    const outputEl = document.getElementById('output');
+    const outputOverlayEl = document.getElementById('outputOverlay');
+    const inputEl = document.getElementById('input') as HTMLTextAreaElement;
+    if (!outputEl || !inputEl || !outputOverlayEl) return;
 
     const executeBtnEl = document.getElementById('executeBtn') as HTMLButtonElement;
     const runBtnEl = document.getElementById('runBtn') as HTMLButtonElement;
@@ -18,6 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const speedRangeEl = document.getElementById('speedRange') as HTMLInputElement;
     const speedTextEl = document.getElementById('speedText') as HTMLInputElement;
+
+    const samplesEl = document.getElementById('samples') as HTMLElement;
+
+    SAMPLES.forEach((sample, index) => {
+        const sampleEl = document.createElement('div');
+        sampleEl.classList.add('dropdown-item');
+        sampleEl.textContent = `${index + 1}. ${sample.name}`;
+        sampleEl.addEventListener('click', () => {
+            running = false;
+            inProgress = false;
+            inputEl.value = sample.code;
+            inputEl.dispatchEvent(new Event('input'));
+        });
+        samplesEl.appendChild(sampleEl);
+    });
+
+    inputEl.addEventListener('input', () => {
+        outputEl.textContent = inputEl.value.replace(Grammar.Tokens.Pointer, ' ');
+        outputOverlayEl.textContent = inputEl.value.replace(new RegExp(`[^${Grammar.Tokens.Pointer}]`, 'g'), ' ');
+    });
 
     speedRangeEl?.addEventListener('input', () => {
         speedTextEl.value = speedRangeEl.value;
@@ -37,26 +64,62 @@ document.addEventListener('DOMContentLoaded', () => {
         parser.run();
     });
 
+    let parser: Parser;
+    let op: Operation;
     runBtnEl?.addEventListener('click', () => {
-        const parser = new Parser(inputEl.value);
-        const op = {done: false, output: ''};
-        setTimeout(() => stepThrough(op, parser, Number(speedRangeEl.value)), Number(speedRangeEl.value));
+        if (!running) {
+            if (!inProgress) {
+                parser = new Parser(inputEl.value);
+                op = {done: false, output: ''};
+                inProgress = true;
+            }
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                op = stepThrough(op, parser, Number(speedRangeEl.value)), Number(speedRangeEl.value);
+            });
+            running = true;
+            runBtnEl.textContent = '⏸️ Pause';
+        } else {
+            clearTimeout(timeout);
+            running = false;
+            runBtnEl.textContent = '🕐 Run';
+        }
     });
 });
 
-function stepThrough(op: Operation, parser: Parser, speed: number) {
-    op = parser.step(op);
-    if (!op.done) {
-        const out = document.getElementById('output');
-        const lines = parser.visualGrid.map(line => {
-            return line.map(col => {
-                return col.token;
-            }).join('');
-        });
-        const output = lines.join('\n');
-        out!.textContent = output;
-        setTimeout(() => stepThrough(op, parser, speed), speed);
+function stepThrough(operation: Operation, parser: Parser, speed: number): Operation {
+    operation = parser.step(operation);
+    updateIndicators(parser);
+    if (!operation.done) {
+        const outputOverlayEl = document.getElementById('outputOverlay');
+        if (!outputOverlayEl || !(outputOverlayEl instanceof HTMLElement)) return operation;
+
+        outputOverlayEl.innerHTML = '';
+        for (let i = 0; i <= parser.currentPoint.y; i++) {
+            if (i === parser.currentPoint.y) {
+                outputOverlayEl.innerHTML += ' '.repeat(Math.max(parser.currentPoint.x, 0));
+                outputOverlayEl.innerHTML += `<span class="pointer pointer-${parser.pointer.direction}">${Grammar.Tokens.Pointer}</span>`;
+            } else {
+                outputOverlayEl.textContent += '\n';
+            }
+        }
+
+        const registerEl = document.getElementById('register') as HTMLPreElement;
+        const stringRegisterEl = document.getElementById('stringRegister') as HTMLPreElement;
+        const outputRegisterEl = document.getElementById('outputRegister') as HTMLPreElement;
+
+        registerEl.textContent = parser.pointer.stack.toString();
+        stringRegisterEl.textContent = '[' + parser.pointer.stringStack.join(', ') + ']';
+        outputRegisterEl.textContent = parser.outputRegister?.toString() ?? 'NULL';
+
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => stepThrough(operation, parser, speed), speed);
+        return operation;
     } else {
-        console.log(op.output);
+        clearTimeout(timeout);
+        console.log(operation.output);
+        inProgress = false;
+        running = false;
+        return operation;
     }
 }

@@ -16,11 +16,12 @@ export class ConsoleOutput {
 
         // Create the Console Div container.
         function createOuterElement(id) {
+            const wrapperElement = document.getElementById(wrapperElementId);
             let outer = document.getElementById(id);
             if (!outer) {
                 outer = document.createElement('fieldset');
                 outer.id = id;
-                document.body.appendChild(outer);
+                wrapperElement.appendChild(outer);
             }
             let style = outer.style;
             return outer;
@@ -81,7 +82,7 @@ export class ConsoleOutput {
             $table.style.width = '100%';
             $table.setAttribute('border', '1');
             const $head = document.createElement('thead');
-            const $tdata = document.createElement('td');
+            let $tdata = document.createElement('td');
             $tdata.innerHTML = 'Index';
             $head.appendChild($tdata);
 
@@ -128,7 +129,6 @@ export class ConsoleOutput {
         });
 
         // Detect dark or light colors.
-
         function setDarkLight(element) {
             const color = window.getComputedStyle(element, null).backgroundColor;
             if (isDark(color)) {
@@ -139,7 +139,7 @@ export class ConsoleOutput {
         }
 
         function isDark(color) {
-            const match = /rgb\((\d+).*?(\d+).*?(\d+)\)/.exec(color);
+            const match = /rgb(?!a)?\((\d+).*?(\d+).*?(\d+)(?!.+?)?\)/.exec(color);
             return parseFloat(match[1])
                 + parseFloat(match[2])
                 + parseFloat(match[3])

@@ -9,7 +9,17 @@
     </head>
     <body>
         <main>
-            <div>
+            <div id="toolbar">
+                <nav>
+                    <div class="dropdown-wrapper">
+                        <span data-dropdown="samples">Samples</span>
+                        <div class="dropdown hidden" data-dropdown-content="samples" id="samples">
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="input-wrapper">
                 <textarea name="input" id="input"></textarea>
                 <div class="controls">
                     <div class="btn-group">
@@ -30,7 +40,43 @@
                 </div>
             </div>
 
-            <pre id="output"></pre>
+            <div class="output-wrapper">
+                <pre id="output"></pre>
+                <pre id="outputOverlay"></pre>
+            </div>
+
+            <div id="console"></div>
+            <div id="memory" class="memory-container">
+                <div class="register-container memory-col memory-container memory-and-states">
+                    <div class="half memory-col">
+                        <strong class="memory-title">States</strong>
+                        <div class="states-col">
+                            <dl>
+                                <dt>Direction:</dt>
+                                <dd id="direction" class="state-arrow">&rarr;</dd>
+                                <dt>String mode:</dt>
+                                <dd id="stringMode">Off</dd>
+                                <dt>Condition mode:</dt>
+                                <dd id="conditionMode">Off</dd>
+                                <dt>Grid size:</dt>
+                                <dd id="gridSize">0x0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="half memory-col register-col">
+                        <strong class="memory-title">Register</strong>
+                        <pre class="memory-data" id="register"></pre>
+                    </div>
+                </div>
+                <div class="string-register-container memory-col">
+                    <strong class="memory-title">String Register</strong>
+                    <pre class="memory-data" id="stringRegister"></pre>
+                </div>
+                <div class="output-register-container memory-col">
+                    <strong class="memory-title">Output Register</strong>
+                    <pre class="memory-data" id="outputRegister"></pre>
+                </div>
+            </div>
         </main>
 
         <script type="module" src="/src/main.ts"></script>
