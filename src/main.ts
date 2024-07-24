@@ -1,10 +1,11 @@
 import { Grammar } from '../lib/grammar';
 import { Operation, Parser } from '../lib/interpreter';
-import { ConsoleOutput } from './console';
-import { initDropdowns } from './dropdown';
-import { updateIndicators } from './indicators';
-import { SAMPLES } from './samples';
+import { ConsoleOutput } from './imports/console';
+import { initDropdowns } from './imports/dropdown';
+import { cacheElements } from './imports/elementsCache';
+import { SAMPLES } from './imports/samples';
 
+let elements: {[k: string]: HTMLElement} = {};
 let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
 let running = false;
 let inProgress = false;
@@ -12,21 +13,23 @@ let inProgress = false;
 document.addEventListener('DOMContentLoaded', () => {
     const consoleOutput = new ConsoleOutput('console');
 
+    elements = cacheElements('output', 'outputOverlay', 'input', 'executeBtn', 'runBtn', 'debugBtn', 'restartBtn', 'speedRange', 'speedText', 'samples', 'register', 'stringRegister', 'outputRegister', 'direction', 'stringMode', 'conditionMode', 'gridSize');
     initDropdowns();
 
-    const outputEl = document.getElementById('output');
-    const outputOverlayEl = document.getElementById('outputOverlay');
-    const inputEl = document.getElementById('input') as HTMLTextAreaElement;
+    const outputEl = elements['output'];
+    const outputOverlayEl = elements['outputOverlay'];
+    const inputEl = elements['input'] as HTMLTextAreaElement;
     if (!outputEl || !inputEl || !outputOverlayEl) return;
 
-    const executeBtnEl = document.getElementById('executeBtn') as HTMLButtonElement;
-    const runBtnEl = document.getElementById('runBtn') as HTMLButtonElement;
-    const debugBtnEl = document.getElementById('debugBtn') as HTMLButtonElement;
+    const executeBtnEl = elements['executeBtn'] as HTMLButtonElement;
+    const runBtnEl = elements['runBtn'] as HTMLButtonElement;
+    const debugBtnEl = elements['debugBtn'] as HTMLButtonElement;
+    const restartBtnEl = elements['restartBtn'] as HTMLButtonElement;
 
-    const speedRangeEl = document.getElementById('speedRange') as HTMLInputElement;
-    const speedTextEl = document.getElementById('speedText') as HTMLInputElement;
+    const speedRangeEl = elements['speedRange'] as HTMLInputElement;
+    const speedTextEl = elements['speedText'] as HTMLInputElement;
 
-    const samplesEl = document.getElementById('samples') as HTMLElement;
+    const samplesEl = elements['samples'] as HTMLElement;
 
     SAMPLES.forEach((sample, index) => {
         const sampleEl = document.createElement('div');
@@ -82,16 +85,21 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             clearTimeout(timeout);
             running = false;
-            runBtnEl.textContent = '🕐 Run';
+            runBtnEl.textContent = !inProgress ? '🕐 Run' : '▶️ Continue';
         }
     });
 });
 
 function stepThrough(operation: Operation, parser: Parser, speed: number): Operation {
     operation = parser.step(operation);
-    updateIndicators(parser);
+
+    elements['direction'].innerHTML = `&${parser.pointer.direction.charAt(0)}arr;`;
+    elements['stringMode'].textContent = parser.pointer.stringMode ? 'ON' : 'OFF';
+    elements['conditionMode'].textContent = parser.pointer.conditionMode ? 'ON' : 'OFF';
+    elements['gridSize'].textContent = `${parser.width} x ${parser.height}`;
+
     if (!operation.done) {
-        const outputOverlayEl = document.getElementById('outputOverlay');
+        const outputOverlayEl = elements['outputOverlay'];
         if (!outputOverlayEl || !(outputOverlayEl instanceof HTMLElement)) return operation;
 
         outputOverlayEl.innerHTML = '';
@@ -104,9 +112,9 @@ function stepThrough(operation: Operation, parser: Parser, speed: number): Opera
             }
         }
 
-        const registerEl = document.getElementById('register') as HTMLPreElement;
-        const stringRegisterEl = document.getElementById('stringRegister') as HTMLPreElement;
-        const outputRegisterEl = document.getElementById('outputRegister') as HTMLPreElement;
+        const registerEl = elements['register'] as HTMLPreElement;
+        const stringRegisterEl = elements['stringRegister'] as HTMLPreElement;
+        const outputRegisterEl = elements['outputRegister'] as HTMLPreElement;
 
         registerEl.textContent = parser.pointer.stack.toString();
         stringRegisterEl.textContent = '[' + parser.pointer.stringStack.join(', ') + ']';
@@ -118,6 +126,7 @@ function stepThrough(operation: Operation, parser: Parser, speed: number): Opera
     } else {
         clearTimeout(timeout);
         console.log(operation.output);
+        elements['runBtn'].textContent = '🕐 Run';
         inProgress = false;
         running = false;
         return operation;
