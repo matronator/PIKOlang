@@ -1,8 +1,11 @@
 export module Grammar {
+    export type Noop = ' ';
+
     export type Plus = '+';
     export type Minus = '-';
     export type Multiply = '*';
     export type Divide = '/';
+
     export type Underscore = '_';
 
     export type Equals = '=';
@@ -37,8 +40,8 @@ export module Grammar {
 
     export type AlphaNumChar = Char | Digit;
 
-    export type MathOperator = Plus | Minus | Multiply | Divide | Underscore;
-    export type ComparisonOperator = Equals | LessThan | GreaterThan;
+    export type MathOperator = Plus | Minus | Multiply | Divide;
+    export type ComparisonOperator = Equals | LessThan | GreaterThan | ExclamationMark;
     export type Operator = MathOperator | ComparisonOperator;
 
     export type Keyword = QuestionMark | ExclamationMark | Semicolon | Colon | Ampersand | Tilde;
@@ -50,6 +53,7 @@ export module Grammar {
     export type Token = AlphaNumChar | Operator | Keyword | StringModeInitializer | DirectionModifier | PointerSymbol | PointerSplitter;
 
     export enum Tokens {
+        Noop = ' ',
         Pointer = '#',
         Plus = '+',
         Minus = '-',
@@ -84,5 +88,17 @@ export module Guards {
 
     export function isAlphaNum(char: string): char is Grammar.Char {
         return RegExp('^[a-zA-Z0-9]$').test(char);
+    }
+
+    export function isDigit(char: string): char is Grammar.Digit {
+        return RegExp('^[0-9]$').test(char);
+    }
+
+    export function isComparisonOperator(char: string): char is Grammar.ComparisonOperator {
+        return [Grammar.Tokens.Equals.toString(), Grammar.Tokens.LessThan.toString(), Grammar.Tokens.GreaterThan.toString(), Grammar.Tokens.ExclamationMark.toString()].includes(char);
+    }
+
+    export function isMathOperator(char: string): char is Grammar.MathOperator {
+        return [Grammar.Tokens.Plus.toString(), Grammar.Tokens.Minus.toString(), Grammar.Tokens.Multiply.toString(), Grammar.Tokens.Divide.toString(), Grammar.Tokens.Underscore.toString()].includes(char);
     }
 }

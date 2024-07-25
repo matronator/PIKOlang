@@ -117,33 +117,20 @@ export class Parser {
         this.move();
         const cell = this.grid[this.pointer.y][this.pointer.x];
 
-        if (this.pointer.stringMode) {
-            if (cell.token !== this.pointer.stringModeInitializer) {
-                this.pointer.stringStack.push(cell.token);
-                return op;
-            } else {
-                this.pointer.stringMode = false;
-                this.pointer.stringModeInitializer = undefined;
-                return op;
-            }
+        let shouldContinue = this.#stringModeCheck(cell);
+        if (shouldContinue) {
+            return op;
         }
 
-        if (this.pointer.conditionMode) {
-            if (cell.token === Grammar.Tokens.LessThan) {
-                this.pointer.comparisonOperator = '<';
-            } else if (cell.token === Grammar.Tokens.GreaterThan) {
-                this.pointer.comparisonOperator = '>';
-            } else if (cell.token === Grammar.Tokens.Equals) {
-                this.pointer.comparisonOperator = '=';
-            }
-        }
-
-        if (Guards.isAlphaNum(cell.token)) {
+        shouldContinue = this.#conditionModeCheck(cell);
+        if (shouldContinue) {
+            return op;
         }
 
         switch (cell.token) {
             case Grammar.Tokens.Semicolon:
                 op.done = true;
+                // TODO: If output register is empty, output the stack
                 break;
             case Grammar.Tokens.Ampersand:
                 if (this.outputRegister === null) {
@@ -158,6 +145,14 @@ export class Parser {
                 console.log(this.outputRegister);
                 this.outputRegister = null;
                 break;
+            case Grammar.Tokens.Tilde:
+                if (this.pointer.stringStack.length > 0) {
+                    if (this.outputRegister === null) {
+                        this.outputRegister = '';
+                    }
+                    this.outputRegister += this.pointer.stringStack.pop() as string;
+                }
+                break
             case Grammar.Tokens.ExclamationMark:
                 this.pointer.stack = 0;
                 this.pointer.stringStack = [];
@@ -165,8 +160,7 @@ export class Parser {
                 break;
             case Grammar.Tokens.SingleQuote:
             case Grammar.Tokens.DoubleQuote:
-                this.pointer.stringMode = true;
-                this.pointer.stringModeInitializer = cell.token;
+                this.#stringModeCheck(cell);
                 break;
             case Grammar.DirectionModifiers.DownArrow:
                 this.pointer.direction = 'down';
@@ -180,7 +174,30 @@ export class Parser {
             case Grammar.DirectionModifiers.RightArrow:
                 this.pointer.direction = 'right';
                 break;
+            case Grammar.Tokens.Equals:
+                console.log(this.pointer.stack);
+                break;
+            case Grammar.Tokens.QuestionMark:
+                this.pointer.conditionMode = true;
+                break;
+            case Grammar.Tokens.Plus:
+            case Grammar.Tokens.Minus:
+            case Grammar.Tokens.Multiply:
+            case Grammar.Tokens.Divide:
+                if (!this.pointer.operator) {
+                    this.pointer.operator = cell.token as Grammar.MathOperator;
+                } else {
+                    this.#operatorCheck(cell);
+                }
+                break;
+            case Grammar.Tokens.Underscore:
+                this.pointer.stack = Math.floor(this.pointer.stack);
+                break;
+            case Grammar.Tokens.Noop:
+                // no-op
+                break;
             default:
+                this.#operatorCheck(cell);
                 break;
         }
 
@@ -224,5 +241,119 @@ export class Parser {
         this.pointer.currentCell = this.grid[this.pointer.y][this.pointer.x].token;
         this.visualGrid[this.pointer.y][this.pointer.x].token = Grammar.Tokens.Pointer;
         this.currentPoint = {x: this.pointer.x, y: this.pointer.y};
+    }
+
+    #stringModeCheck(cell: TokenPoint): boolean {
+        if (this.pointer.stringMode) {
+            if (cell.token !== this.pointer.stringModeInitializer) {
+                this.pointer.stringStack.push(cell.token);
+                return true;
+            }
+            this.pointer.stringMode = false;
+            this.pointer.stringModeInitializer = undefined;
+            return true;
+        } else if (cell.token === Grammar.Tokens.SingleQuote || cell.token === Grammar.Tokens.DoubleQuote) {
+            this.pointer.stringMode = true;
+            this.pointer.stringModeInitializer = cell.token as Grammar.Quotes;
+            return true;
+        }
+
+        return false;
+    }
+
+    #conditionModeCheck(cell: TokenPoint): boolean {
+        if (this.pointer.conditionMode) {
+            if (Guards.isComparisonOperator(cell.token)) {
+                if (!this.pointer.comparisonOperator) {
+                    this.pointer.comparisonOperator = cell.token as Grammar.ComparisonOperator;
+                    return true;
+                }
+            }
+
+            if (cell.token === Grammar.Tokens.QuestionMark && this.pointer.comparisonOperator) {
+                if (!this.pointer.comparator) {
+                    this.pointer.comparator = 0;
+                }
+                if (this.pointer.comparisonOperator === Grammar.Tokens.Equals) {
+                    if (this.pointer.stack !== this.pointer.comparator) {
+                        this.pointer.direction = this.#rotatePointer(false);
+                    }
+                } else if (this.pointer.comparisonOperator === Grammar.Tokens.LessThan) {
+                    if (this.pointer.stack >= this.pointer.comparator) {
+                        this.pointer.direction = this.#rotatePointer(true);
+                    }
+                } else if (this.pointer.comparisonOperator === Grammar.Tokens.GreaterThan) {
+                    if (this.pointer.stack <= this.pointer.comparator) {
+                        this.pointer.direction = this.#rotatePointer(false);
+                    }
+                } else if (this.pointer.comparisonOperator === Grammar.Tokens.ExclamationMark) {
+                    if (this.pointer.stack === this.pointer.comparator) {
+                        this.pointer.direction = this.#rotatePointer(true);
+                    }
+                }
+                this.pointer.conditionMode = false;
+                this.pointer.comparisonOperator = undefined;
+                this.pointer.comparator = undefined;
+                return true;
+            }
+
+            if (Guards.isDigit(cell.token)) {
+                this.pointer.comparator = Number(cell.token);
+            } else {
+                if (cell.token !== Grammar.Tokens.Noop) {
+                    this.pointer.comparator = cell.token.charCodeAt(0);
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    #rotatePointer(anticlockwise: boolean): Direction {
+        const directions: Direction[] = ['up', 'right', 'down', 'left'];
+        const currentDirection = this.pointer.direction;
+        const currentIndex = directions.indexOf(currentDirection);
+        const newIndex = anticlockwise ? currentIndex - 1 : currentIndex + 1;
+        if (newIndex < 0) {
+            return directions[3];
+        } else if (newIndex > 3) {
+            return directions[0];
+        }
+
+        return directions[newIndex];
+    }
+
+    #operatorCheck(cell: TokenPoint): boolean {
+        if (this.pointer.operator) {
+            switch (this.pointer.operator) {
+                case Grammar.Tokens.Plus:
+                    this.pointer.stack += this.#getCellAsValue(cell);
+                    break;
+                case Grammar.Tokens.Minus:
+                    this.pointer.stack -= this.#getCellAsValue(cell);
+                    break;
+                case Grammar.Tokens.Multiply:
+                    this.pointer.stack *= this.#getCellAsValue(cell);
+                    break;
+                case Grammar.Tokens.Divide:
+                    this.pointer.stack /= this.#getCellAsValue(cell);
+                    break;
+            }
+            this.pointer.operator = undefined;
+
+            return true;
+        }
+
+        this.pointer.stack = this.#getCellAsValue(cell);
+        return true;
+    }
+
+    #getCellAsValue(cell: TokenPoint): number {
+        if (Guards.isDigit(cell.token)) {
+            return Number(cell.token);
+        }
+
+        return cell.token.charCodeAt(0);
     }
 }

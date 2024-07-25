@@ -29,7 +29,7 @@ The language has two memory registers and one output register:
 | `!` | Clear all registers |
 | `\|` | Split the pointer into two, one going the original direction and the other one 90° rotated |
 | `?` | Enter condition mode |
-| `[A-z0-9]` | If in string mode, add the character to the string register, otherwise set the register to the value if it's a digit, or to the ASCII value of the character if it's a letter |
+| `[A-z0-9]` | If in string mode, add the character to the string register, otherwise set the register to the value if it's a digit, or to the Unicode value of the character if it's a letter |
 
 
 ## Condition mode
@@ -40,3 +40,4 @@ The language has two memory registers and one output register:
 | `>` | Check if the value in register is greater than the value in the next cell |
 | `<` | Check if the value in register is less than the value in the next cell |
 | `!` | Check if the value in register is not equal to the value in the next cell |
+| `?` | Evaluate the condition and if true, continue moving forward, otherwise rotate the pointer 90° clockwise |

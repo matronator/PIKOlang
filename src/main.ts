@@ -13,7 +13,7 @@ let inProgress = false;
 document.addEventListener('DOMContentLoaded', () => {
     const consoleOutput = new ConsoleOutput('console');
 
-    elements = cacheElements('output', 'outputOverlay', 'input', 'executeBtn', 'runBtn', 'debugBtn', 'restartBtn', 'speedRange', 'speedText', 'samples', 'register', 'stringRegister', 'outputRegister', 'direction', 'stringMode', 'conditionMode', 'gridSize');
+    elements = cacheElements('output', 'outputOverlay', 'input', 'executeBtn', 'runBtn', 'debugBtn', 'restartBtn', 'speedRange', 'speedText', 'samples', 'register', 'stringRegister', 'outputRegister', 'direction', 'stringMode', 'conditionMode', 'gridSize', 'mathOperator');
     initDropdowns();
 
     const outputEl = elements['output'];
@@ -95,8 +95,9 @@ function stepThrough(operation: Operation, parser: Parser, speed: number): Opera
 
     elements['direction'].innerHTML = `&${parser.pointer.direction.charAt(0)}arr;`;
     elements['stringMode'].textContent = parser.pointer.stringMode ? 'ON' : 'OFF';
-    elements['conditionMode'].textContent = parser.pointer.conditionMode ? 'ON' : 'OFF';
+    elements['conditionMode'].textContent = parseConditionString(parser);
     elements['gridSize'].textContent = `${parser.width} x ${parser.height}`;
+    elements['mathOperator'].textContent = parser.pointer.operator ?? 'NULL';
 
     if (!operation.done) {
         const outputOverlayEl = elements['outputOverlay'];
@@ -131,4 +132,13 @@ function stepThrough(operation: Operation, parser: Parser, speed: number): Opera
         running = false;
         return operation;
     }
+}
+
+function parseConditionString(parser: Parser): string {
+    if (!parser.pointer.conditionMode) return 'OFF';
+    const leftSide = parser.pointer.stack ?? '?';
+    const rightSide = parser.pointer.comparator ?? '?';
+    const operator = parser.pointer.comparisonOperator ?? '=';
+
+    return `${leftSide} ${operator} ${rightSide}`;
 }
