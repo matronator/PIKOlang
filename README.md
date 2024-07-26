@@ -2,6 +2,10 @@
 
 **PIKOlang *(Porn Is Kinky Obviously)*** is a simple, interpreted, esoteric 2-Dimensional programming language. To write **PIKOlang *(Professionally Interpreted Kernel Operations)***, you need to write a program in a 2D grid, where each cell is a command. The program in **PIKOlang *(Probably Incomplete Kotlin Object)*** is executed by a cursor that moves around the grid, executing the commands it encounters. You can either execute the entire **PIKOlang *(Python Is Kinda Overrated)*** program at once or step through it one command at a time.
 
+## Online playground
+
+You can try out the language at the [Online Playground](https://matronator.github.com/PIKOlang).
+
 ## Syntax
 
 The program starts with `#` symbol placed anywhere on the grid. The grid can be arbitrarily large. The cursor always starts facing right and moves in the direction it is facing, executing the commands in order as they are encountered (the cursor moves over them).
