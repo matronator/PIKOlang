@@ -130,7 +130,6 @@ export class Parser {
         switch (cell.token) {
             case Grammar.Tokens.Semicolon:
                 op.done = true;
-                // TODO: If output register is empty, output the stack
                 break;
             case Grammar.Tokens.Ampersand:
                 if (this.outputRegister === null) {
@@ -201,7 +200,7 @@ export class Parser {
                 break;
         }
 
-        op.output = this.outputRegister;
+        op.output = this.outputRegister ?? this.pointer.stack;
         return op;
     }
 
