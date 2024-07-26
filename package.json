@@ -1,8 +1,9 @@
 {
-  "name": "piko-lang",
+  "name": "pikolang",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "module": "lib/main.ts",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -12,5 +13,5 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.1"
   },
-  "main": "lib/main.ts"
+  "main": "src/main.ts"
 }

@@ -11,7 +11,7 @@ let running = false;
 let inProgress = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const consoleOutput = new ConsoleOutput('console');
+    new ConsoleOutput('console');
 
     elements = cacheElements('output', 'outputOverlay', 'input', 'executeBtn', 'runBtn', 'debugBtn', 'restartBtn', 'speedRange', 'speedText', 'samples', 'register', 'stringRegister', 'outputRegister', 'direction', 'stringMode', 'conditionMode', 'gridSize', 'mathOperator');
     initDropdowns();
@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const executeBtnEl = elements['executeBtn'] as HTMLButtonElement;
     const runBtnEl = elements['runBtn'] as HTMLButtonElement;
-    const debugBtnEl = elements['debugBtn'] as HTMLButtonElement;
-    const restartBtnEl = elements['restartBtn'] as HTMLButtonElement;
+    // const debugBtnEl = elements['debugBtn'] as HTMLButtonElement;
+    // const restartBtnEl = elements['restartBtn'] as HTMLButtonElement;
 
     const speedRangeEl = elements['speedRange'] as HTMLInputElement;
     const speedTextEl = elements['speedText'] as HTMLInputElement;
