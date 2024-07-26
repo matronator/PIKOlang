@@ -11,7 +11,7 @@ The language has two memory registers and one output register:
 | Symbol | Description |
 | ------ | ----------- |
 | `#`    | The pointer. Can only be once in the source file and always starts facing right |
-| `;`    | Exit the program and print the current value of the output register |
+| `;`    | Exit the program and print the current value of the output register or if it's empty, print the current register value |
 | `v`    | Change the direction of the pointer downwards |
 | `>`    | Change the direction of the pointer to right |
 | `^`    | Change the direction of the pointer upwards |
