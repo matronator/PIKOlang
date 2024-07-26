@@ -24,7 +24,7 @@ The language has two memory registers and one output register:
 | `=` | Print the current value in the register. \**Different in Condition Mode* |
 | `_` | Floors the current value in the register to the nearest integer |
 | `&` | Move the entire string register over to the output in FIFO mode |
-| `~` | Pop the last element from the string register and append it to the output |
+| `~` | Pop the last element from the string register and append it to the output register |
 | `:` | Print the current value of the output register and clears it |
 | `!` | Clear all registers |
 | `\|` | Split the pointer into two, one going the original direction and the other one 90° rotated |
