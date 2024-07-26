@@ -23,7 +23,7 @@ Find the full syntax with all the symbols explained in the [SYNTAX.md](https://g
 ```html
 <b>PIKOlang <i>(Polymorphic Ignorant Kind Organization)</i></b>
 <!-- Or like this -->
-<strong>PIKOlang <em>(Previously It Knew Oprah)</em></strong>
+<strong>PIKOlang <em>(Previously I Knew Oprah)</em></strong>
 ```
 
 #### LaTeX:
