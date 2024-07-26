@@ -13,22 +13,22 @@ The language has two memory registers and one output register:
 | `#`    | The pointer. Can only be once in the source file and always starts facing right |
 | `;`    | Exit the program and print the current value of the output register or if it's empty, print the current register value |
 | `v`    | Change the direction of the pointer downwards |
-| `>`    | Change the direction of the pointer to right |
+| `>`    | Change the direction of the pointer to right. \**Different in Condition Mode* |
 | `^`    | Change the direction of the pointer upwards |
-| `<`    | Change the direction of the pointer to left |
+| `<`    | Change the direction of the pointer to left. \**Different in Condition Mode* |
 | `"`, `'` | Enter/exit string mode (the entrance and exit characters must be same) |
 | `+` | Add to the value currently in register |
 | `-` | Subtract from the value currently in register |
 | `/` | Divide the value currently in register |
 | `*` | Multiply the value currently in register |
-| `=` | Print the current value in the register |
+| `=` | Print the current value in the register. \**Different in Condition Mode* |
 | `_` | Floors the current value in the register to the nearest integer |
 | `&` | Move the entire string register over to the output in FIFO mode |
 | `~` | Pop the last element from the string register and append it to the output |
 | `:` | Print the current value of the output register and clears it |
 | `!` | Clear all registers |
 | `\|` | Split the pointer into two, one going the original direction and the other one 90° rotated |
-| `?` | Enter condition mode |
+| `?` | Enter or exit condition mode |
 | `[A-z0-9]` | If in string mode, add the character to the string register, otherwise set the register to the value if it's a digit, or to the Unicode value of the character if it's a letter |
 
 
