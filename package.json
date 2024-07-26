@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "postbuild": "cp index.html dist/index.html && cp src/main.css dist/main.css",
+    "postbuild": "cp index.html dist/index.html && cp src/style.css dist/style.css",
     "preview": "vite preview"
   },
   "devDependencies": {
