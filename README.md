@@ -6,7 +6,7 @@
 
 The program starts with `#` symbol placed anywhere on the grid. The grid can be arbitrarily large. The cursor always starts facing right and moves in the direction it is facing, executing the commands in order as they are encountered (the cursor moves over them).
 
-Find the full syntax with all the symbols explained in the [SYNTAX.md](./SYNTAX.md) file.
+Find the full syntax with all the symbols explained in the [SYNTAX.md](https://github.com/matronator/PIKOlang/blob/main/SYNTAX.md) file.
 
 ## Trademark Usage
 
