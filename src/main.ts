@@ -1,3 +1,4 @@
+import './style.css';
 import { Grammar } from '../lib/grammar';
 import { Operation, Parser } from '../lib/interpreter';
 import { ConsoleOutput } from './imports/console';
