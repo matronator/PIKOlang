@@ -14,6 +14,8 @@ Find the full syntax with all the symbols explained in the [SYNTAX.md](https://g
 
 ## Trademark Usage
 
+<sub><sup>If it wasn't obvious, this part is a joke, don't worry.</sup></sub>
+
 **PIKOlang *(Pandas In Kung-Fu Outfit)*** is a trademark of **@matronator** ([Website](https://matronator.cz) | [GitHub](https://github.com/matronator)). When referring to **PIKOlang *(Programming In Keyboard Only)***, you must write out the full name of the language and add a unique backronym in parentheses after the name and the name must be formatted in combination of bold and italic (where possible) like in these examples for various languages:
 
 #### Markdown:
