@@ -1,33 +1,29 @@
 export const SAMPLES = [
     {
         name: "Hello, World!",
-        code: `#  v
-
-v  <
-          >  "Helllo!"&;
-
-
->         ^  `,
+        code: `#"Hello, World!"&;`,
     },
     {
         name: "Conditions",
-        code: `#  v
+        code: `False, so it will rotate the pointer
+                v
+#    1    ? > 3 ?
 
-v  <
-       >       >  "Helllo!"&;
-
-
->  8?>9?       ^  `,
+ ;  ?  1  =  ?  <
+    ^
+True, so it will continue forward`,
     },
     {
         name: "Math Operations",
-        code: `#  v
+        code: `# 1+2+3+4+5=   v
 
-v  <
-        >      >  "Helllo!"&;
-
-
-> 2+3?>4?      ^  `,
+               +
+               A
+               /   Letters will use unicode value
+               c
+               =
+               _  <-- Floor it to nearest integer
+               ;`,
     },
     {
         name: "Loop to 10",
@@ -37,5 +33,9 @@ v  <
  +
  ^   <
 `,
+    },
+    {
+        name: "Reverse Hello World",
+        code: `# "!dlroW ,olleH" ~~~~~~~~~~~~~;`,
     },
 ];
