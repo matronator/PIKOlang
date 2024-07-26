@@ -86,7 +86,7 @@ main {
 
 pre#output,
 textarea#input,
-pre#outputOverlay {
+pre.output-overlay {
     display: block;
     width: 100%;
     min-height: 200px;
@@ -109,11 +109,11 @@ pre#outputOverlay {
 }
 
 pre#output,
-pre#outputOverlay {
+pre.output-overlay {
     height: 100%;
 }
 
-pre#outputOverlay {
+pre.output-overlay {
     position: absolute;
     top: 0;
     z-index: 1;

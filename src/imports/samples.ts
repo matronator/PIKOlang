@@ -38,4 +38,9 @@ v  <
  ^   <
 `,
     },
+    {
+        name: "Concurrency",
+        code: `#  "asddaasd"&;
+# "assdda"&;`,
+    },
 ];

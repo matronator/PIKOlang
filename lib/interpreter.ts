@@ -4,7 +4,7 @@ type Direction = 'up' | 'down' | 'left' | 'right';
 
 type OutputRegister = string | number | null;
 
-class Pointer {
+export class Pointer {
     x: number;
     y: number;
     direction: Direction;
@@ -26,7 +26,7 @@ class Pointer {
     }
 }
 
-interface Point {
+export interface Point {
     x: number;
     y: number;
 }
@@ -50,7 +50,9 @@ export class Parser {
     private grid: Grid = [];
     visualGrid: Grid = [];
     pointer: Pointer;
+    additionalPointers: Pointer[] = [];
     currentPoint: Point = {x: 0, y: 0};
+    additionalPoints: Point[] = [];
     outputRegister: OutputRegister = null;
 
     constructor(input: string) {
@@ -80,11 +82,13 @@ export class Parser {
             for (let col of cols) {
                 if (Guards.isPointer(col)) {
                     if (pointerSet) {
-                        throw new SyntaxError('Multiple pointers found');
+                        this.additionalPointers.push(new Pointer(x, y));
+                        this.additionalPoints.push({x, y});
+                    } else {
+                        pointerSet = true;
+                        pointerX = x;
+                        pointerY = y;
                     }
-                    pointerSet = true;
-                    pointerX = x;
-                    pointerY = y;
                     const point: TokenPoint = {x: x, y: y, token: ' '};
                     line[x] = point;
                     x++;
@@ -114,7 +118,10 @@ export class Parser {
 
     step(op: Operation): Operation {
         if (op.done === true) return op;
-        this.move();
+        this.pointer = this.move(this.pointer);
+        this.additionalPointers.forEach(pointer => {
+            pointer = this.move(pointer, false);
+        });
         const cell = this.grid[this.pointer.y][this.pointer.x];
 
         let shouldContinue = this.#stringModeCheck(cell);
@@ -204,42 +211,48 @@ export class Parser {
         return op;
     }
 
-    move() {
-        const oldX = this.pointer.x;
-        const oldY = this.pointer.y;
-        let currentCell = this.pointer.currentCell;
+    move(pointer: Pointer, mainPointer: boolean = true): Pointer {
+        const oldX = pointer.x;
+        const oldY = pointer.y;
+        let currentCell = pointer.currentCell;
         this.visualGrid[oldY][oldX].token = currentCell;
 
-        switch (this.pointer.direction) {
+        switch (pointer.direction) {
             case 'up':
-                this.pointer.y--;
-                if (this.pointer.y < 0) {
-                    this.pointer.y = this.height - 1;
+                pointer.y--;
+                if (pointer.y < 0) {
+                    pointer.y = this.height - 1;
                 }
                 break;
             case 'down':
-                this.pointer.y++;
-                if (this.pointer.y >= this.height) {
-                    this.pointer.y = 0;
+                pointer.y++;
+                if (pointer.y >= this.height) {
+                    pointer.y = 0;
                 }
                 break;
             case 'left':
-                this.pointer.x--;
-                if (this.pointer.x < 0) {
-                    this.pointer.x = this.width - 1;
+                pointer.x--;
+                if (pointer.x < 0) {
+                    pointer.x = this.width - 1;
                 }
                 break;
             case 'right':
-                this.pointer.x++;
-                if (this.pointer.x >= this.width) {
-                    this.pointer.x = 0;
+                pointer.x++;
+                if (pointer.x >= this.width) {
+                    pointer.x = 0;
                 }
                 break;
         }
 
-        this.pointer.currentCell = this.grid[this.pointer.y][this.pointer.x].token;
-        this.visualGrid[this.pointer.y][this.pointer.x].token = Grammar.Tokens.Pointer;
-        this.currentPoint = {x: this.pointer.x, y: this.pointer.y};
+        pointer.currentCell = this.grid[pointer.y][pointer.x].token;
+        this.visualGrid[pointer.y][pointer.x].token = Grammar.Tokens.Pointer;
+        if (mainPointer) {
+            this.currentPoint = {x: pointer.x, y: pointer.y};
+        } else {
+            this.additionalPoints[this.additionalPointers.indexOf(pointer)] = {x: pointer.x, y: pointer.y};
+        }
+
+        return pointer;
     }
 
     #stringModeCheck(cell: TokenPoint): boolean {

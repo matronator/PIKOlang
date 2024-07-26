@@ -1,11 +1,12 @@
 import { Grammar } from '../lib/grammar';
-import { Operation, Parser } from '../lib/interpreter';
+import { Operation, Parser, Point, Pointer } from '../lib/interpreter';
 import { ConsoleOutput } from './imports/console';
 import { initDropdowns } from './imports/dropdown';
 import { cacheElements } from './imports/elementsCache';
 import { SAMPLES } from './imports/samples';
 
 let elements: {[k: string]: HTMLElement} = {};
+let overlays: {[k: string]: HTMLElement} = {};
 let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
 let running = false;
 let inProgress = false;
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     inputEl.addEventListener('input', () => {
-        outputEl.textContent = inputEl.value.replace(Grammar.Tokens.Pointer, ' ');
+        outputEl.textContent = inputEl.value.replace(new RegExp(`${Grammar.Tokens.Pointer}`, 'g'), ' ');
         outputOverlayEl.textContent = inputEl.value.replace(new RegExp(`[^${Grammar.Tokens.Pointer}]`, 'g'), ' ');
     });
 
@@ -73,6 +74,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!running) {
             if (!inProgress) {
                 parser = new Parser(inputEl.value);
+                const outputOverlayEl = elements['outputOverlay'];
+                const ids: string[] = [];
+                parser.additionalPointers.forEach((pointer, index) => {
+                    if (!overlays['outputOverlay' + index]) {
+                        const newOverlay = outputOverlayEl.cloneNode(true) as HTMLElement;
+                        newOverlay.id = 'outputOverlay' + index;
+                        newOverlay.textContent = (outputOverlayEl.textContent ?? '').replace(new RegExp(`[^${Grammar.Tokens.Pointer}]`, 'g'), ' ');
+                        outputOverlayEl.parentElement?.insertAdjacentElement('beforeend', newOverlay);
+                        ids.push('outputOverlay' + index);
+                    }
+                });
+                if (ids.length > 0) {
+                    overlays = cacheElements(...ids);
+                }
                 op = {done: false, output: ''};
                 inProgress = true;
             }
@@ -103,14 +118,11 @@ function stepThrough(operation: Operation, parser: Parser, speed: number): Opera
         const outputOverlayEl = elements['outputOverlay'];
         if (!outputOverlayEl || !(outputOverlayEl instanceof HTMLElement)) return operation;
 
-        outputOverlayEl.innerHTML = '';
-        for (let i = 0; i <= parser.currentPoint.y; i++) {
-            if (i === parser.currentPoint.y) {
-                outputOverlayEl.innerHTML += ' '.repeat(Math.max(parser.currentPoint.x, 0));
-                outputOverlayEl.innerHTML += `<span class="pointer pointer-${parser.pointer.direction}">${Grammar.Tokens.Pointer}</span>`;
-            } else {
-                outputOverlayEl.textContent += '\n';
-            }
+        updateOverlay(outputOverlayEl, parser.pointer, parser.currentPoint);
+        for (const key in overlays) {
+            const overlay = overlays[key];
+            if (!overlay || !(overlay instanceof HTMLElement)) continue;
+            updateOverlay(overlay, parser.additionalPointers[Number(key.replace('outputOverlay', ''))], parser.additionalPoints[Number(key.replace('outputOverlay', ''))]);
         }
 
         const registerEl = elements['register'] as HTMLPreElement;
@@ -141,4 +153,16 @@ function parseConditionString(parser: Parser): string {
     const operator = parser.pointer.comparisonOperator ?? '=';
 
     return `${leftSide} ${operator} ${rightSide}`;
+}
+
+function updateOverlay(outputOverlayEl: HTMLElement, pointer: Pointer, currentPoint: Point) {
+    outputOverlayEl.innerHTML = '';
+    for (let i = 0; i <= currentPoint.y; i++) {
+        if (i === currentPoint.y) {
+            outputOverlayEl.innerHTML += ' '.repeat(Math.max(currentPoint.x, 0));
+            outputOverlayEl.innerHTML += `<span class="pointer pointer-${pointer.direction}">${Grammar.Tokens.Pointer}</span>`;
+        } else {
+            outputOverlayEl.textContent += '\n';
+        }
+    }
 }
