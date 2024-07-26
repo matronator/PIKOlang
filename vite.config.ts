@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -5,8 +6,8 @@ export default defineConfig({
     base: '/PIKOlang/',
     build: {
         lib: {
-            entry: 'src/main.ts',
-            formats: ['es'],
-        }
+            entry: resolve(__dirname, 'lib/main.ts'),
+            formats: ['es']
+        },
     }
 });
