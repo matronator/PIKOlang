@@ -29,7 +29,7 @@ Find the full syntax with all the symbols explained in the [SYNTAX.md](https://g
 #### LaTeX:
 
 ```latex
-\textbf{PIKOlang \textit{(Polymorphic Ignorant Kind Organization)}}
+\textbf{PIKOlang \textit{(Polymorphic Innocent Kinology Objective)}}
 ```
 
 #### BBCode:
