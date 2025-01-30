@@ -1,3 +1,5 @@
+![pikolang](https://github.com/user-attachments/assets/d397ff0b-320a-4b17-8f04-4f32797c20cd)
+
 # **PIKOlang *(Praise Innovative Kubernetes Operators)***
 
 **PIKOlang *(Porn Is Kinky Obviously)*** is a simple, interpreted, esoteric 2-Dimensional programming language. To write **PIKOlang *(Professionally Interpreted Kernel Operations)***, you need to write a program in a 2D grid, where each cell is a command. The program in **PIKOlang *(Probably Incomplete Kotlin Object)*** is executed by a cursor that moves around the grid, executing the commands it encounters. You can either execute the entire **PIKOlang *(Python Is Kinda Overrated)*** program at once or step through it one command at a time.
