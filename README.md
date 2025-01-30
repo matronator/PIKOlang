@@ -50,6 +50,10 @@ Find the full syntax with all the symbols explained in the [SYNTAX.md](https://g
 '''PIKOlang''' ''(Police Is Killing Orphans)''
 ```
 
+The backronym can be in a different language than English if appropriate. So for instance if one would like to make a post about the project in Czech to a Czech audience, one could write the backronym in Czech as well, for instance: **PIKOlang *(Perníkáři Implementují Královské Opiáty)***
+
+Also, punctuation is allowed as well, so one could write this for example: **PIKOlang *(Proč Ignoruješ Kokain, Obludo?)*** or in English **PIKOlang *(Predator Is Killed, Or...?)***
+
 ### Backronym Rules
 
 1. The backronym must be a phrase that is grammatically and syntactically correct, but doesn't have to necessarily make sense logically.
